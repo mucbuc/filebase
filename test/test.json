@@ -1,0 +1,8 @@
+{
+	"include": [
+		"inc.json"
+	],
+	"sources": [ 
+		"src/main.cpp"
+	]
+}
