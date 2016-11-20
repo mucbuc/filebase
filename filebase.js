@@ -11,78 +11,67 @@ const inject = require( 'inject-json' )
 
 function getSources(pathJSON) {
 
-  inject( pathJSON, 'include', (result, next, pathJSON, cb) => {
-    
-    if (!next.hasOwnProperty('sources')) {
-      cb( Object.assign( result, next ) );
-    }
-    else {
-      flatten( next, 'sources' )
-      .then( (src) => {
-        let merged = [];
+  return new Promise( (resolve, reject) => {
 
-        console.log( 'traverse:', src ); 
-
-        traverse( src, ( file, done ) => {
-
-          console.log( 'file:', pathJSON, file ); 
-          
-          const mergedPath = path.join( path.dirname(pathJSON), file );
-
-          merged.push( mergedPath );
-          done();
-        })
-        .then( () => {
-          cb( Object.assign( result, { "sources": merged } ) );         
-        })
-        .catch( (err) => {
-          console.log( 'error', err );
-        });
-      });
-    }
-  } )
-  .then( (result) => {
-
-    let flattenedResult = { "sources": [] };
-
-    traverse( result, (lib, next) => { 
-      if (lib.hasOwnProperty('sources')) {
-        flattenedResult.sources = flattenedResult.sources.concat( lib.sources );
+    inject( pathJSON, 'include', (result, next, pathJSON, cb) => {
+      
+      if (!next.hasOwnProperty('sources')) {
+        cb( Object.assign( result, next ) );
       }
       else {
-        const keys = Object.keys(lib);
-        const key = keys[0];
-        flattenedResult.sources = flattenedResult.sources.concat( lib[key].sources ); 
-      }
-      next();
-    } )
-    .then( () => { 
+        flatten( next, 'sources' )
+        .then( (src) => {
+          let merged = [];
 
-      console.log( 'result', flattenedResult ); 
+          traverse( src, ( file, done ) => {
+            const mergedPath = path.join( path.dirname(pathJSON), file );
 
-      var jsonString = JSON.stringify( result );
-
-      console.log( 'jsonString', jsonString );
-
-      //result = result["inc.json"];
-      
-      fs.writeFile( tempFile, jsonString, (err) => {
-        if (err) throw err; 
-        flatten( result, 'sources' )
-        .then( (result) => {
-          console.log( 'flattened', flattenedResult ); 
+            merged.push( mergedPath );
+            done();
+          })
+          .then( () => {
+            cb( Object.assign( result, { "sources": merged } ) );         
+          })
+          .catch( (err) => {
+            console.log( 'error', err );
+          });
         });
+      }
+    } )
+    .then( (result) => {
 
-        //.catch( (err) => {
-      //    console.log( err ); 
-      //  });
-      }); 
+      let flattenedResult = { "sources": [] };
+
+      traverse( result, (lib, next) => { 
+        if (lib.hasOwnProperty('sources')) {
+          flattenedResult.sources = flattenedResult.sources.concat( lib.sources );
+        }
+        else {
+          const keys = Object.keys(lib);
+          const key = keys[0];
+          flattenedResult.sources = flattenedResult.sources.concat( lib[key].sources ); 
+        }
+        next();
+      } )
+      .then( () => { 
+
+        var jsonString = JSON.stringify( result );
+
+        //result = result["inc.json"];
+        
+        fs.writeFile( tempFile, jsonString, (err) => {
+          if (err) throw err; 
+          flatten( result, 'sources' )
+          .then( (result) => {
+            resolve( flattenedResult ); 
+          });
+        }); 
+      });
+    })
+    .catch( (err) => {
+      console.log( 'error', err ); 
     });
-  })
-  .catch( (err) => {
-    console.log( 'error', err ); 
-  });
-
+  }); 
 }
 
 module.exports = getSources; 

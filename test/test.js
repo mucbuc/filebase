@@ -9,7 +9,14 @@ let getSources = require( './../filebase.js' )
 test( 'dummy', (t) => {
 	let e = new Expector( t );
 
-	getSources( './test/test.json' ); 
+	e.expect( { sources: [ 'test/lib/mod/src/fkjdsa.h', 'test/src/main.cpp' ] } ); 
 
-	e.check(); 
+	getSources( './test/test.json' )
+	.then( (sources) => {
+
+		e.emit( sources ); 
+
+		e.check(); 		
+	});
+
 });
