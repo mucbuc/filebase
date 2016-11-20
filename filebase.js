@@ -27,48 +27,26 @@ function getSources(pathJSON) {
 
   return new Promise( (resolve, reject) => {
 
+    let flat = [];
+
     inject( pathJSON, 'include', (next, pathJSON, cb) => {
       
       if (!next.hasOwnProperty('sources')) {
-        cb( next );
+        cb();
       }
       else {
         flatten( next, 'sources' )
         .then( src => {
           prependPath( src, path.join( path.dirname(pathJSON) ) ) 
           .then( preped => {
-            cb( { "sources": preped } );
+            flat = flat.concat( preped );
+            cb();
           });
         });
       }
     } )
-    .then( (result) => {
-
-      let flattenedResult = { "sources": [] };
-
-      traverse( result, (lib, next) => { 
-        if (lib.hasOwnProperty('sources')) {
-          flattenedResult.sources = flattenedResult.sources.concat( lib.sources );
-        }
-        else {
-          const keys = Object.keys(lib);
-          const key = keys[0];
-          flattenedResult.sources = flattenedResult.sources.concat( lib[key].sources ); 
-        }
-        next();
-      } )
-      .then( () => { 
-
-        var jsonString = JSON.stringify( result );
-        
-        fs.writeFile( tempFile, jsonString, (err) => {
-          if (err) throw err; 
-          flatten( result, 'sources' )
-          .then( (result) => {
-            resolve( flattenedResult ); 
-          });
-        }); 
-      });
+    .then( () => {
+      resolve( { "sources": flat } ); 
     })
     .catch( (err) => {
       console.log( 'error', err ); 
