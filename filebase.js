@@ -2,12 +2,26 @@
 
 'use strict';
 
-const inject = require( 'inject-json' )
+const assert = require( 'assert' )
+  , inject = require( 'inject-json' )
   , flatten = require( 'json-flatten' )
   , tempFile = './tmp.json'
   , fs = require( 'fs' )
   , path = require( 'path' )
   , traverse = require( 'traverjs' ); 
+
+function prependPath(src, dirname) {
+  assert( Array.isArray( src ) ); 
+
+  return new Promise( (resolve, reject) => {
+    let result = [];
+    traverse( src, ( file, next ) => {
+      result.push( path.join( dirname, file ) );
+      next();
+    })
+    .then( resolve.bind( null, result ) );
+  });
+}
 
 function getSources(pathJSON) {
 
@@ -20,19 +34,12 @@ function getSources(pathJSON) {
       }
       else {
         flatten( next, 'sources' )
-        .then( (src) => {
-          let merged = [];
-
-          traverse( src, ( file, done ) => {
-            const mergedPath = path.join( path.dirname(pathJSON), file );
-
-            merged.push( mergedPath );
-            done();
+        .then( src => {
+          prependPath( src, path.join( path.dirname(pathJSON) ) ) 
+          .then( preped => {
+            cb( Object.assign( result, { "sources": preped } ) );
           })
-          .then( () => {
-            cb( Object.assign( result, { "sources": merged } ) );         
-          })
-          .catch( (err) => {
+          .catch( err => {
             console.log( 'error', err );
           });
         });
@@ -56,8 +63,6 @@ function getSources(pathJSON) {
       .then( () => { 
 
         var jsonString = JSON.stringify( result );
-
-        //result = result["inc.json"];
         
         fs.writeFile( tempFile, jsonString, (err) => {
           if (err) throw err; 
