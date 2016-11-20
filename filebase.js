@@ -27,17 +27,17 @@ function getSources(pathJSON) {
 
   return new Promise( (resolve, reject) => {
 
-    inject( pathJSON, 'include', (result, next, pathJSON, cb) => {
+    inject( pathJSON, 'include', (next, pathJSON, cb) => {
       
       if (!next.hasOwnProperty('sources')) {
-        cb( Object.assign( result, next ) );
+        cb( next );
       }
       else {
         flatten( next, 'sources' )
         .then( src => {
           prependPath( src, path.join( path.dirname(pathJSON) ) ) 
           .then( preped => {
-            cb( Object.assign( result, { "sources": preped } ) );
+            cb( { "sources": preped } );
           });
         });
       }
