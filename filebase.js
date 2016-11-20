@@ -38,9 +38,6 @@ function getSources(pathJSON) {
           prependPath( src, path.join( path.dirname(pathJSON) ) ) 
           .then( preped => {
             cb( Object.assign( result, { "sources": preped } ) );
-          })
-          .catch( err => {
-            console.log( 'error', err );
           });
         });
       }
