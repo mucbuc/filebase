@@ -28,7 +28,7 @@ function getSources(pathJSON) {
 
   return new Promise( (resolve, reject) => {
 
-    let flat = [];
+    let flat = {};
 
     inject( pathJSON, 'import', (next, pathJSON, cb) => {
       
@@ -40,14 +40,22 @@ function getSources(pathJSON) {
         .then( src => {
           prependPath( src, path.join( path.dirname(pathJSON) ) ) 
           .then( preped => {
-            flat = flat.concat( preped );
+            
+            if (!flat.hasOwnProperty('sources')) {
+              flat.sources = [];
+            }
+
+            flat.sources = flat.sources.concat( preped );
             cb();
           });
+        })
+        .catch( (err) => {
+          console.log( 'error', err ); 
         });
       }
     } )
     .then( () => {
-      resolve( { "sources": flat } ); 
+      resolve( flat ); 
     })
     .catch( (err) => {
       console.log( 'error', err ); 
