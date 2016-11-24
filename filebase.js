@@ -33,6 +33,9 @@ function getSources(pathJSON) {
     inject( pathJSON, 'import', (next, pathJSON, cb) => {
       
       if (!next.hasOwnProperty('sources')) {
+        
+        console.log( '*', next ); 
+
         cb();
       }
       else {
