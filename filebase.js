@@ -8,7 +8,8 @@ const assert = require( 'assert' )
   , tempFile = './tmp.json'
   , fs = require( 'fs' )
   , path = require( 'path' )
-  , traverse = require( 'traverjs' ); 
+  , traverse = require( 'traverjs' )
+  , program = require( 'commander' );
 
 function prependPath(src, dirname) {
   assert( Array.isArray( src ) ); 
@@ -29,7 +30,7 @@ function getSources(pathJSON) {
 
     let flat = [];
 
-    inject( pathJSON, 'include', (next, pathJSON, cb) => {
+    inject( pathJSON, 'import', (next, pathJSON, cb) => {
       
       if (!next.hasOwnProperty('sources')) {
         cb();
@@ -54,4 +55,23 @@ function getSources(pathJSON) {
   }); 
 }
 
-module.exports = getSources; 
+if (module.parent) {
+  module.exports = getSources;
+  return;  
+}
+else {
+  program
+  .version( '0.0.0' )
+  .usage( '<json file>' )
+  .parse( process.argv );
+
+  if (program.args.length != 1) {
+    program.help();
+  }
+  else {
+    getSources( program.args[0] )
+    .then( result => {
+      console.log( result ); 
+    });
+  }
+}
