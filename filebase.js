@@ -33,9 +33,12 @@ function getSources(pathJSON) {
     inject( pathJSON, 'import', (next, pathJSON, cb) => {
       
       if (!next.hasOwnProperty('sources')) {
-        
-        console.log( '*', next ); 
+        const key = Object.keys(next)[0];
 
+        if (!flat.hasOwnProperty(key)) {
+          flat[key] = [];
+        }
+        flat[key] = flat[key].concat(next[key]);
         cb();
       }
       else {
