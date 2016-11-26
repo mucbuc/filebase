@@ -6,7 +6,6 @@ const assert = require( 'assert' )
   , inject = require( 'inject-json' )
   , flatten = require( 'json-flatten' )
   , tempFile = './tmp.json'
-  , fs = require( 'fs' )
   , path = require( 'path' )
   , traverse = require( 'traverjs' )
   , program = require( 'commander' );
