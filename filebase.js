@@ -8,7 +8,8 @@ const assert = require( 'assert' )
   , tempFile = './tmp.json'
   , path = require( 'path' )
   , traverse = require( 'traverjs' )
-  , program = require( 'commander' );
+  , program = require( 'commander' )
+  , walkJson = require( 'walk-json' ); 
 
 function prependPath(src, dirname) {
   assert( Array.isArray( src ) ); 
@@ -29,38 +30,33 @@ function getSources(pathJSON) {
 
     let flat = {};
 
-    inject( pathJSON, 'import', (next, pathJSON, cb) => {
-      
-      if (!next.hasOwnProperty('sources')) {
-        const key = Object.keys(next)[0];
+    inject( pathJSON, 'import' )    
+    .then( (someResult) => {
 
-        if (!flat.hasOwnProperty(key)) {
-          flat[key] = [];
-        }
-        flat[key] = flat[key].concat(next[key]);
-        cb();
-      }
-      else {
-        flatten( next, 'sources' )
-        .then( src => {
-          prependPath( src, path.join( path.dirname(pathJSON) ) ) 
-          .then( preped => {
-            
-            if (!flat.hasOwnProperty('sources')) {
-              flat.sources = [];
-            }
-
-            flat.sources = flat.sources.concat( preped );
-            cb();
-          });
+      flatten( someResult, 'sources', ( key, value, cb, base ) => {        
+        prependPath( value, path.dirname(base) )
+        .then( result => {
+          cb( result ); 
         })
-        .catch( (err) => {
-          console.log( 'error', err ); 
+        .catch( err => {
+          console.log( err );
         });
-      }
-    } )
-    .then( () => {
-      resolve( flat ); 
+
+      }, path.dirname(pathJSON) )
+      .then( src => {
+        
+        walkJson( someResult, (prop, jsonPath) => {
+          
+          if (typeof prop !== 'object' && !jsonPath.match( /sources/ ))
+          {
+            src[jsonPath] = prop; 
+          }
+        
+          console.log( 'rrresult', JSON.stringify( src, null, 2 ) );
+        }, (a, b) => {
+          return b; 
+        }); 
+      }); 
     })
     .catch( (err) => {
       console.log( 'error', err ); 

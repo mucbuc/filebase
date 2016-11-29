@@ -19,7 +19,8 @@
   "dependencies": {
     "inject-json": "*", 
     "json-flatten": "*",
-    "commander": "*"
+    "commander": "*",
+    "walk-json": "*"
   },
   "devDependencies": {
     "tape": "*", 
