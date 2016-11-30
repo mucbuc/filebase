@@ -28,35 +28,28 @@ function getSources(pathJSON) {
 
   return new Promise( (resolve, reject) => {
 
-    let flat = {};
+    let flat = { sources: [] };
 
     inject( pathJSON, 'import' )    
     .then( (someResult) => {
 
-      flatten( someResult, 'sources', ( key, value, cb, base ) => {        
-        prependPath( value, path.dirname(base) )
-        .then( result => {
-          cb( result ); 
-        })
-        .catch( err => {
-          console.log( err );
-        });
-
-      }, path.dirname(pathJSON) )
-      .then( src => {
-        
-        walkJson( someResult, (prop, jsonPath) => {
-          
-          if (typeof prop !== 'object' && !jsonPath.match( /sources/ ))
-          {
-            src[jsonPath] = prop; 
-          }
-        
-          console.log( 'rrresult', JSON.stringify( src, null, 2 ) );
-        }, (a, b) => {
-          return b; 
-        }); 
-      }); 
+      walkJson( someResult, (prop, jsonPath) => {
+        if (jsonPath.match( /sources/ )) {
+          prependPath( prop, jsonPath.substr(0, jsonPath.length -'sources'.length) )
+          .then( src => {
+            flat.sources = flat.sources.concat( src );
+          });
+        }
+        else if (typeof prop !== 'object' && !jsonPath.match( /sources/ ))
+        {
+          flat[path.basename(jsonPath)] = prop; 
+        }
+      }, (a, b) => {
+        return path.join( path.dirname(a), b );
+      })
+      .then( () => {
+        console.log( 'rrresult', JSON.stringify( flat, null, 2 ) );
+      });
     })
     .catch( (err) => {
       console.log( 'error', err ); 
