@@ -5,7 +5,6 @@
 const assert = require( 'assert' )
   , inject = require( 'inject-json' )
   , flatten = require( 'json-flatten' )
-  , tempFile = './tmp.json'
   , path = require( 'path' )
   , traverse = require( 'traverjs' )
   , program = require( 'commander' )
@@ -22,6 +21,10 @@ function prependPath(src, dirname) {
     })
     .then( resolve.bind( null, result ) );
   });
+}
+
+function join(a, b) {
+  return path.join( path.dirname(a), b );
 }
 
 function getSources(pathJSON) {
@@ -44,15 +47,14 @@ function getSources(pathJSON) {
         {
           flat[path.basename(jsonPath)] = prop; 
         }
-      }, (a, b) => {
-        return path.join( path.dirname(a), b );
-      })
+      }
+      , join )
       .then( () => {
-        console.log( 'rrresult', JSON.stringify( flat, null, 2 ) );
+        console.log( JSON.stringify( flat, null, 2 ) );
       });
     })
     .catch( (err) => {
-      console.log( 'error', err ); 
+      process.stderr.write( 'error:', err ); 
     });
   }); 
 }
