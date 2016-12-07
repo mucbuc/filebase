@@ -37,12 +37,10 @@ function getProperties(pathJSON) {
     .then( (someResult) => {
 
       walkJson( someResult, (prop, jsonPath) => {
-        const matches = jsonPath.match( /(sources|options)/ );
+        const matches = jsonPath.match( /(sources|config)/ );
 
         if (matches) {
           const match = matches[1];
-          console.log( 'found match', match );
-
           if (!flat.hasOwnProperty(match)) {
             flat[match] = [];
           }
