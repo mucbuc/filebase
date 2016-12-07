@@ -57,7 +57,15 @@ function getProperties(pathJSON) {
       }
       , join )
       .then( () => {
-        console.log( JSON.stringify( flat, null, 2 ) );
+
+        const result = {
+          "includes": flat.config,
+          "target_defaults": {
+            "sources": flat.sources
+          }
+        };
+
+        console.log( JSON.stringify( result, null, 2 ) );
       });
     })
     .catch( (err) => {
