@@ -27,20 +27,29 @@ function join(a, b) {
   return path.join( path.dirname(a), b );
 }
 
-function getSources(pathJSON) {
+function getProperties(pathJSON) {
 
   return new Promise( (resolve, reject) => {
 
-    let flat = { sources: [] };
+    let flat = {};
 
     inject( pathJSON, 'import' )    
     .then( (someResult) => {
 
       walkJson( someResult, (prop, jsonPath) => {
-        if (jsonPath.match( /sources/ )) {
-          prependPath( prop, jsonPath.substr(0, jsonPath.length -'sources'.length) )
+        const match = jsonPath.match( /(sources|options)/ );
+
+        if (match) {
+
+          console.log( 'found match', match[1] );
+
+          if (!flat.hasOwnProperty(match)) {
+            flat[match[1]] = [];
+          }
+
+          prependPath( prop, jsonPath.substr(0, jsonPath.length - match[1].length) )
           .then( src => {
-            flat.sources = flat.sources.concat( src );
+            flat[match[1]] = flat[match[1]].concat( src );
           });
         }
         else if (typeof prop !== 'object' && !jsonPath.match( /sources/ ))
@@ -60,7 +69,7 @@ function getSources(pathJSON) {
 }
 
 if (module.parent) {
-  module.exports = getSources;
+  module.exports = getProperties;
   return;  
 }
 else {
@@ -73,7 +82,7 @@ else {
     program.help();
   }
   else {
-    getSources( program.args[0] )
+    getProperties( program.args[0] )
     .then( result => {
       console.log( result ); 
     });

@@ -4,5 +4,8 @@
 	],
 	"sources": [ 
 		"src/main.cpp"
+	],
+	"options": [
+		"opt.gypi"
 	]
 }
