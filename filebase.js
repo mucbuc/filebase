@@ -37,22 +37,22 @@ function getProperties(pathJSON) {
     .then( (someResult) => {
 
       walkJson( someResult, (prop, jsonPath) => {
-        const match = jsonPath.match( /(sources|options)/ );
+        const matches = jsonPath.match( /(sources|options)/ );
 
-        if (match) {
-
-          console.log( 'found match', match[1] );
+        if (matches) {
+          const match = matches[1];
+          console.log( 'found match', match );
 
           if (!flat.hasOwnProperty(match)) {
-            flat[match[1]] = [];
+            flat[match] = [];
           }
 
-          prependPath( prop, jsonPath.substr(0, jsonPath.length - match[1].length) )
+          prependPath( prop, jsonPath.substr(0, jsonPath.length - match.length) )
           .then( src => {
-            flat[match[1]] = flat[match[1]].concat( src );
+            flat[match] = flat[match].concat( src );
           });
         }
-        else if (typeof prop !== 'object' && !jsonPath.match( /sources/ ))
+        else if (typeof prop !== 'object')
         {
           flat[path.basename(jsonPath)] = prop; 
         }
