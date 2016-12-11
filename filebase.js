@@ -4,7 +4,6 @@
 
 const assert = require( 'assert' )
   , inject = require( 'inject-json' )
-  , flatten = require( 'json-flatten' )
   , path = require( 'path' )
   , traverse = require( 'traverjs' )
   , program = require( 'commander' )
@@ -36,7 +35,7 @@ function getProperties(pathJSON) {
     inject( pathJSON, 'import' )    
     .then( (someResult) => {
 
-      walkJson( someResult, (prop, jsonPath) => {
+      walkJson( someResult, (prop, jsonPath, next) => {
         const matches = jsonPath.match( /(sources|config)/ );
 
         if (matches) {
@@ -48,28 +47,26 @@ function getProperties(pathJSON) {
           prependPath( prop, jsonPath.substr(0, jsonPath.length - match.length) )
           .then( src => {
             flat[match] = flat[match].concat( src );
-          });
+            next();
+          })
+          .catch( next );
         }
         else if (typeof prop !== 'object')
         {
           flat[path.basename(jsonPath)] = prop; 
+          next();
+        }
+        else {
+          next();
         }
       }
       , join )
       .then( () => {
-
-        const result = {
-          "includes": flat.config,
-          "target_defaults": {
-            "sources": flat.sources
-          }
-        };
-
-        console.log( JSON.stringify( result, null, 2 ) );
+        resolve( flat );
       });
     })
     .catch( (err) => {
-      process.stderr.write( 'error:', err ); 
+      reject( err ); 
     });
   }); 
 }
@@ -89,8 +86,11 @@ else {
   }
   else {
     getProperties( program.args[0] )
-    .then( result => {
-      console.log( result ); 
+    .then( (result) => {
+      console.log( JSON.stringify( result, null, 2 ) );
+    })
+    .catch( (err) => {
+      process.stderr.write( 'error:', err ); 
     });
   }
 }

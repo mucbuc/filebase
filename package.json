@@ -18,7 +18,6 @@
   "homepage": "https://github.com/mucbuc/filebase#readme",
   "dependencies": {
     "inject-json": "*", 
-    "json-flatten": "*",
     "commander": "*",
     "walk-json": "*"
   },
