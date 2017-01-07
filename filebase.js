@@ -32,10 +32,15 @@ function getProperties(pathJSON) {
 
     let flat = {};
 
+    console.log( '&&', pathJSON );
+
     inject( pathJSON, 'import' )    
     .then( (someResult) => {
 
       walkJson( someResult, (prop, jsonPath, next) => {
+        
+        jsonPath = path.join( path.dirname( pathJSON ), jsonPath );
+
         const matches = jsonPath.match( /(sources|config)/ );
 
         if (matches) {
