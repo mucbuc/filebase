@@ -1,5 +1,5 @@
 {
-	"include": [
+	"import": [
 		"lib/mod/inc.json"
 	],
 	"sources": [ 
