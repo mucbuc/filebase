@@ -32,8 +32,6 @@ function getProperties(pathJSON) {
 
     let flat = {};
 
-    console.log( '&&', pathJSON );
-
     inject( pathJSON, 'import' )    
     .then( (someResult) => {
 

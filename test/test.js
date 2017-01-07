@@ -13,9 +13,6 @@ test( 'dummy', (t) => {
 
 	getSources( './test/test.json' )
 	.then( (sources) => {
-
-		console.log( '***', sources );
-
 		e.emit( sources ).check(); 		
 	});
 
@@ -28,8 +25,7 @@ test( 'dummy2', (t) => {
 
 	getSources( './test/test2.json' )
 	.then( (sources) => {
-		e.emit( sources ); 
-		e.check(); 		
+		e.emit( sources ).check(); 		
 	});
 
 });
