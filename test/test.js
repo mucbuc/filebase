@@ -4,7 +4,10 @@
 
 let getSources = require( './../filebase.js' )
   , test = require( 'tape' )
-  , Expector = require( 'expector' ).SeqExpector; 
+  , Expector = require( 'expector' ).SeqExpector
+  , path = require( 'path' );
+
+process.chdir( path.join( __dirname, '..' ) );
 
 test( 'dummy', (t) => {
 	let e = new Expector( t );

@@ -31,13 +31,14 @@ function getProperties(pathJSON) {
   return new Promise( (resolve, reject) => {
 
     let flat = {};
+    const pathBase = path.dirname( pathJSON );
 
     inject( pathJSON, 'import' )    
     .then( (someResult) => {
 
       walkJson( someResult, (prop, jsonPath, next) => {
         
-        jsonPath = path.join( path.dirname( pathJSON ), jsonPath );
+        jsonPath = path.join( pathBase, jsonPath );
 
         const matches = jsonPath.match( /(sources|config)/ );
 
