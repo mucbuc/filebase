@@ -33,7 +33,7 @@ function getProperties(pathJSON) {
     let flat = {};
     const pathBase = path.dirname( pathJSON );
 
-    inject( pathJSON, 'import' )    
+    inject( pathJSON, 'import')    
     .then( (someResult) => {
 
       walkJson( someResult, (prop, jsonPath, next) => {

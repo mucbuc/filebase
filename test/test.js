@@ -9,7 +9,7 @@ let getSources = require( './../filebase.js' )
 
 process.chdir( path.join( __dirname, '..' ) );
 
-test( 'dummy', (t) => {
+test( 'single import', (t) => {
 	let e = new Expector( t );
 
 	e.expect( { sources: [ 'test/lib/mod/src/fkjdsa.h', 'test/src/main.cpp' ], config: [ 'test/config.gypi' ] } ); 
@@ -21,14 +21,27 @@ test( 'dummy', (t) => {
 
 });
 
-test( 'dummy2', (t) => {
+test( 'multiple import', (t) => {
 	let e = new Expector( t );
 
 	e.expect( { sources: [ 'test/lib/mod/src/fkjdsa.h', 'test/lib/modB/src/aabbcc.h', 'test/src/main.cpp' ] } ); 
 
-	getSources( './test/test2.json' )
+	getSources( './test/test2.json')
 	.then( (sources) => {
 		e.emit( sources ).check(); 		
 	});
+});
 
+test( 'inside current working directory', (t) => {
+
+	process.chdir( __dirname );
+
+	let e = new Expector( t );
+
+	e.expect( { sources: [ 'lib/mod/src/fkjdsa.h', 'lib/modB/src/aabbcc.h', 'src/main.cpp' ] } ); 
+
+	getSources( './test2.json' )
+	.then( (sources) => {
+		e.emit( sources ).check(); 		
+	});
 });
