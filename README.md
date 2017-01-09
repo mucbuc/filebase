@@ -50,4 +50,31 @@ how to specialize for compiler?
 		"linker flags": []
 	}
 
+even better? explicit definition file 
+
+def.json
+mac.json
+win.json
+gcc.json
+clang.json
+
+target\win-gcc.json
+target\mac-clang.json
+target\mac-gcc.json
+
+target\win-gcc.json
+{
+	"import": [
+		"../win.json",
+		"../gcc.json"
+	]
+}
+
+
+
+
+
+
+
+
 
