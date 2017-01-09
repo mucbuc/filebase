@@ -16,59 +16,20 @@ specs:
 
 questions: 
 how to specialize for os ?
-
-	different files for different targets:
-
-	def.json
-	{
-		"files": "src/main.cpp"
-	}
-
-	mac.json
-	{
-		"import": "def.json",
-		"files": "src/mac.cpp"
-	}
-
-	win.json
-	{
-		"import": "def.json",
-		"files": "src/win.cpp"
-	}
-
 how to specialize for compiler? 
 
-	gcc.json
-	{
-		"compiler flags": [],
-		"linker flags" : []
-	}
+1) explicit definition file 
 
-	clang.json
-	{
-		"compiler flags": []
-		"linker flags": []
-	}
+def.json  // files
+mac.json  // files
+win.json  // files
+gcc.json  // configurations
+clang.json  // configurations
 
-even better? explicit definition file 
+filebase win.json gcc.json
+filebase mac.json clang.json
+filebase mac.json gcc.json
 
-def.json
-mac.json
-win.json
-gcc.json
-clang.json
-
-target\win-gcc.json
-target\mac-clang.json
-target\mac-gcc.json
-
-target\win-gcc.json
-{
-	"import": [
-		"../win.json",
-		"../gcc.json"
-	]
-}
 
 
 
