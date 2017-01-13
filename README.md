@@ -23,9 +23,48 @@ filebase mac.json gcc.json
 
 
 
+whole example:
 
+mac.json
+{
+	"import": "base.json"
+}
 
+win.json
+{
+	"import": "base.json"
+}
 
+ios.json
+{
+	"import": "base.json"
+}
 
+gcc.json
+clang.json
+msv.json
 
+target.json
+{
+	mac: [mac.json, clang.json],
+	mac-gcc: [mac.json, gcc.json],
+	win: [win.json, msv.json]
+	defaults: {
+		win32: win,
+		win64: win,
+		osx: mac
+	}
+}
+
+>>>
+
+build mac mac-gcc
+
+or 
+
+build
+
+or 
+
+build --debug
 
