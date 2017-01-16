@@ -68,3 +68,35 @@ or
 
 build --debug
 
+
+
+
+
+design, constraints: 
+
+-need some "switch plate" file, mapping target with def file 
+-clients should be able to specify target within the def file
+
+mac-gcc: mac.json, gcc.json
+
+>>> 
+
+targets.json
+{
+	filter: { 
+		"*mac*": "mac.json
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
