@@ -46,15 +46,15 @@ test( 'inside current working directory', (t) => {
 	});
 });
 
-test.only( 'branching', (t) => {
+test.skip( 'branching', (t) => {
 	let e = new Expector( t );
 
-	e.expect( { mac: "specific", "win": "something" } ); 
+	e.expect( { mac: "specific" } ); 
 
-	getSources( './test/branch.json', 'mac' )
+	getSources( './test/branch.json', /mac/ )
 	.then( (sources) => {
 
-		console.log( JSON.stringify( sources, null, 2 ) );
+		console.log( '***', JSON.stringify( sources, null, 2 ) );
 
 		e.emit( sources ).check(); 		
 	});

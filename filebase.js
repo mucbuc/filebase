@@ -1,5 +1,11 @@
 #!/usr/bin/env node
 
+/* todo: 
+
+1) return promise from processMatches with sub result for flat
+2) merge sub result from branches 
+*/ 
+
 'use strict';
 
 const assert = require( 'assert' )
@@ -37,16 +43,32 @@ function getProperties(pathJSON, target) {
     .then( (someResult) => {
 
       walkJson( someResult, (prop, jsonPath, next) => {
-        
-/*
-        if (jsonPath == 'branches')
+       
+        console.log( 'jsonPath', jsonPath );
+
+        if (  typeof target !== 'undefined'
+          &&  jsonPath == 'branches')
         {
-          console.log( 'prop: ', prop, jsonPath );
+          let trimmed = {};
+
+          for (var name in prop) {
+            if (name.match(target)) {
+              trimmed[name] = prop[name]
+            }
+          }
+          console.log( 'trimmed', trimmed, jsonPath );
+          processMatches( trimmed, pathBase, () => {
+            next(); ///(true);
+          } );
         }
-*/
-        processMatches( prop, path.join( pathBase, jsonPath ), next );
-        
+        else {
+          processMatches( prop, path.join( pathBase, jsonPath ), next );
+        }
+
         function processMatches(prop, jsonPath, next) {
+          
+          console.log( 'processMatches: ', prop, jsonPath );
+
           const matches = jsonPath.match( /(sources|config)/ );
 
           if (matches) {
@@ -64,10 +86,15 @@ function getProperties(pathJSON, target) {
           }
           else if (typeof prop !== 'object')
           {
+            console.log( 'prop != object' );
+
             flat[path.basename(jsonPath)] = prop; 
             next();
           }
           else {
+
+            console.log( 'ignore:', prop );
+
             next();
           }
         }
