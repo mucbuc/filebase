@@ -49,10 +49,13 @@ test( 'inside current working directory', (t) => {
 test.only( 'branching', (t) => {
 	let e = new Expector( t );
 
-	e.expect( {} ); 
+	e.expect( { mac: "specific", "win": "something" } ); 
 
 	getSources( './test/branch.json' )
 	.then( (sources) => {
+
+		console.log( JSON.stringify( sources, null, 2 ) );
+
 		e.emit( sources ).check(); 		
 	});
 });
