@@ -57,46 +57,49 @@ function getProperties(pathJSON, target) {
             }
           }
           console.log( 'trimmed', trimmed, jsonPath );
-          processMatches( trimmed, pathBase, () => {
-            next(); ///(true);
-          } );
+          processMatches( trimmed, pathBase )
+          .then( next );
         }
         else {
-          processMatches( prop, path.join( pathBase, jsonPath ), next );
+          processMatches( prop, path.join( pathBase, jsonPath ) )
+          .then( next );
         }
 
-        function processMatches(prop, jsonPath, next) {
+        function processMatches(prop, jsonPath) {
           
           console.log( 'processMatches: ', prop, jsonPath );
 
-          const matches = jsonPath.match( /(sources|config)/ );
+          return new Promise( (resolve, reject) => {
 
-          if (matches) {
-            const match = matches[1];
-            if (!flat.hasOwnProperty(match)) {
-              flat[match] = [];
+            const matches = jsonPath.match( /(sources|config)/ );
+
+            if (matches) {
+              const match = matches[1];
+              if (!flat.hasOwnProperty(match)) {
+                flat[match] = [];
+              }
+
+              prependPath( prop, jsonPath.substr(0, jsonPath.length - match.length) )
+              .then( src => {
+                flat[match] = flat[match].concat( src );
+                resolve();
+              })
+              .catch( resolve );
             }
+            else if (typeof prop !== 'object')
+            {
+              console.log( 'prop != object' );
 
-            prependPath( prop, jsonPath.substr(0, jsonPath.length - match.length) )
-            .then( src => {
-              flat[match] = flat[match].concat( src );
-              next();
-            })
-            .catch( next );
-          }
-          else if (typeof prop !== 'object')
-          {
-            console.log( 'prop != object' );
+              flat[path.basename(jsonPath)] = prop; 
+              resolve();
+            }
+            else {
 
-            flat[path.basename(jsonPath)] = prop; 
-            next();
-          }
-          else {
+              console.log( 'ignore:', prop );
 
-            console.log( 'ignore:', prop );
-
-            next();
-          }
+              resolve();
+            }
+          });
         }
       }
       , join )
