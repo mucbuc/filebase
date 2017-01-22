@@ -51,7 +51,7 @@ test.only( 'branching', (t) => {
 
 	e.expect( { mac: "specific", "win": "something" } ); 
 
-	getSources( './test/branch.json' )
+	getSources( './test/branch.json', 'mac' )
 	.then( (sources) => {
 
 		console.log( JSON.stringify( sources, null, 2 ) );
