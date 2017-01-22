@@ -44,9 +44,9 @@ function getProperties(pathJSON, target) {
           console.log( 'prop: ', prop, jsonPath );
         }
 */
-        processMatches( path.join( pathBase, jsonPath ), next );
+        processMatches( prop, path.join( pathBase, jsonPath ), next );
         
-        function processMatches(jsonPath, next) {
+        function processMatches(prop, jsonPath, next) {
           const matches = jsonPath.match( /(sources|config)/ );
 
           if (matches) {
