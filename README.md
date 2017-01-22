@@ -89,7 +89,21 @@ targets.json
 }
 
 
+base.json
+{
+	files: [
+		"base.cpp",
+		branches: [
+			"mac": "mac.cpp",
+			"win": "win.cpp"
+		],
+	],
+	import: [
+		assert: "https:.../"
+	]
+}
 
+{"files":["base",{"branches":{"mac":["mac.cpp"]}}]} == {"branches":{"mac":{"files":["base","mac.cpp"]}}}
 
 
 

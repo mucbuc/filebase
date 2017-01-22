@@ -45,3 +45,14 @@ test( 'inside current working directory', (t) => {
 		e.emit( sources ).check(); 		
 	});
 });
+
+test.only( 'branching', (t) => {
+	let e = new Expector( t );
+
+	e.expect( {} ); 
+
+	getSources( './test/branch.json' )
+	.then( (sources) => {
+		e.emit( sources ).check(); 		
+	});
+});
