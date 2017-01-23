@@ -34,6 +34,7 @@ test( 'multiple import', (t) => {
 
 test( 'inside current working directory', (t) => {
 
+	const cwd = process.cwd();
 	process.chdir( __dirname );
 
 	let e = new Expector( t );
@@ -43,19 +44,17 @@ test( 'inside current working directory', (t) => {
 	getSources( './test2.json' )
 	.then( (sources) => {
 		e.emit( sources ).check(); 		
+		process.chdir( cwd );
 	});
 });
 
-test.skip( 'branching', (t) => {
+test( 'branching', (t) => {
 	let e = new Expector( t );
 
-	e.expect( { mac: "specific" } ); 
+	e.expect( { config: ["test/config.gypi"] } ); 
 
 	getSources( './test/branch.json', /mac/ )
 	.then( (sources) => {
-
-		console.log( '***', JSON.stringify( sources, null, 2 ) );
-
 		e.emit( sources ).check(); 		
 	});
 });

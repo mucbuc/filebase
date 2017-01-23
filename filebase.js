@@ -42,17 +42,17 @@ function getProperties(pathJSON, target) {
     inject( pathJSON, 'import')    
     .then( (someResult) => {
 
-      walkIt(someResult)
+      walkIt(someResult, target)
       .then( (result) => {
         resolve(result);
       });
 
 
-      function walkIt( obj ) {
+      function walkIt( obj, target ) {
 
         return new Promise( (resolve, reject) => {
           let flat = {};
-          walkJson( someResult, (prop, jsonPath, next, skip) => {
+          walkJson( obj, (prop, jsonPath, next, skip) => {
            
             console.log( 'jsonPath', jsonPath );
 
@@ -61,8 +61,6 @@ function getProperties(pathJSON, target) {
             if (  typeof target !== 'undefined'
               &&  jsonPath == 'branches')
             {
-              console.log( '*8*88*', target );
-
               let trimmed = {};
 
               for (let name in prop) {
@@ -70,11 +68,18 @@ function getProperties(pathJSON, target) {
                   trimmed[name] = prop[name]
                 }
               }
-
-              processMatches( trimmed, absPath )
+              
+              walkIt( trimmed )
               .then( (sub) => {
 
-                console.log( 'trimmed', trimmed, jsonPath, sub );
+                for (let name in sub) {
+                  if (!flat.hasOwnProperty(name))
+                  {
+                    flat[name] = [];
+                  }
+
+                  flat[name] = flat[name].concat(sub[name]);
+                }
 
                 skip();
               } );
