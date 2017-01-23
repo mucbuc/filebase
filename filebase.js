@@ -54,8 +54,6 @@ function getProperties(pathJSON, target) {
           let flat = {};
           walkJson( obj, (prop, jsonPath, next, skip) => {
            
-            console.log( 'jsonPath', jsonPath );
-
             let absPath = path.join( pathBase, jsonPath );
 
             if (  typeof target !== 'undefined'
@@ -104,9 +102,6 @@ function getProperties(pathJSON, target) {
 
             function processMatches(prop, jsonPath) {
               
-
-              console.log( 'processMatches: ', prop, jsonPath );
-
               return new Promise( (resolve, reject) => {
 
                 const matches = jsonPath.match( /(sources|config)/ );
@@ -130,9 +125,6 @@ function getProperties(pathJSON, target) {
                   resolve(flat);
                 }
                 else {
-
-                  console.log( 'ignore', prop, jsonPath, typeof prop );
-
                   resolve(flat);
                 }
               });
