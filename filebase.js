@@ -39,6 +39,18 @@ function merge(sub, result) {
   return result;
 }
 
+function propertiesMatching(original, regexp) {
+  let trimmed = {};
+
+  for (let name in original) {
+    if (name.match(regexp)) {
+      trimmed[name] = original[name]
+    }
+  }
+
+  return trimmed;
+}
+
 function getProperties(pathJSON, target) {
 
   return new Promise( (resolve, reject) => {
@@ -66,15 +78,7 @@ function getProperties(pathJSON, target) {
             if (  typeof target !== 'undefined'
               &&  jsonPath == 'branches')
             {
-              let trimmed = {};
-
-              for (let name in prop) {
-                if (name.match(target)) {
-                  trimmed[name] = prop[name]
-                }
-              }
-              
-              walkIt( trimmed )
+              walkIt( propertiesMatching( prop, target ) )
               .then( (sub) => {
                 flat = merge(sub, flat);
                 skip();
