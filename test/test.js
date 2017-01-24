@@ -58,3 +58,15 @@ test( 'branching', (t) => {
 		e.emit( sources ).check(); 		
 	});
 });
+
+test( 'other branch', (t) => {
+	let e = new Expector( t );
+
+	e.expect( { win: 'something' } );
+
+	getSources( './test/branch.json', /win/ )
+	.then( (sources) => {
+		e.emit( sources ).check();
+	});
+});
+	
