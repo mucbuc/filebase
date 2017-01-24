@@ -1,11 +1,5 @@
 #!/usr/bin/env node
 
-/* todo: 
-
-1) return promise from processMatches with sub result for flat
-2) merge sub result from branches 
-*/ 
-
 'use strict';
 
 const assert = require( 'assert' )
@@ -69,17 +63,21 @@ function getProperties(pathJSON, target) {
               
               walkIt( trimmed )
               .then( (sub) => {
-
-                for (let name in sub) {
-                  if (!flat.hasOwnProperty(name))
-                  {
-                    flat[name] = [];
-                  }
-
-                  flat[name] = flat[name].concat(sub[name]);
-                }
-
+                flat = merge(sub, flat);
                 skip();
+
+                function merge(sub, result) {
+
+                  for (let name in sub) {
+                    if (!result.hasOwnProperty(name))
+                    {
+                      result[name] = [];
+                    }
+
+                    result[name] = result[name].concat(sub[name]);
+                  }
+                  return result;
+                }
               } );
             }
             else {
