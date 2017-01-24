@@ -26,6 +26,19 @@ function join(a, b) {
   return path.join( path.dirname(a), b );
 }
 
+function merge(sub, result) {
+
+  for (let name in sub) {
+    if (!result.hasOwnProperty(name))
+    {
+      result[name] = [];
+    }
+
+    result[name] = result[name].concat(sub[name]);
+  }
+  return result;
+}
+
 function getProperties(pathJSON, target) {
 
   return new Promise( (resolve, reject) => {
@@ -65,35 +78,13 @@ function getProperties(pathJSON, target) {
               .then( (sub) => {
                 flat = merge(sub, flat);
                 skip();
-
-                function merge(sub, result) {
-
-                  for (let name in sub) {
-                    if (!result.hasOwnProperty(name))
-                    {
-                      result[name] = [];
-                    }
-
-                    result[name] = result[name].concat(sub[name]);
-                  }
-                  return result;
-                }
               } );
             }
             else {
 
               processMatches( prop, absPath )
               .then( (sub) => {
-                
-                for (let name in sub) {
-                  if (!flat.hasOwnProperty(name))
-                  {
-                    flat[name] = [];
-                  }
-
-                  flat[name] = flat[name].concat(sub[name]);
-                }
-
+                flat = merge(sub, flat);
                 next();
               } );
             }
