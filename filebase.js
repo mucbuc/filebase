@@ -51,6 +51,36 @@ function propertiesMatching(original, regexp) {
   return trimmed;
 }
 
+function processMatches(prop, jsonPath) {
+  
+  return new Promise( (resolve, reject) => {
+
+    const matches = jsonPath.match( /(sources|config)/ );
+    let flat = {};
+
+    if (matches) {
+      const match = matches[1];
+      if (!flat.hasOwnProperty(match)) {
+        flat[match] = [];
+      }
+
+      prependPath( prop, jsonPath.substr(0, jsonPath.length - match.length) )
+      .then( src => {
+        flat[match] = flat[match].concat( src );
+        resolve(flat);
+      })
+      .catch( reject );
+    }
+    else if (typeof prop !== 'object') {
+      flat[path.basename(jsonPath)] = prop; 
+      resolve(flat);
+    }
+    else {
+      resolve(flat);
+    }
+  });
+}
+
 function getProperties(pathJSON, target) {
 
   return new Promise( (resolve, reject) => {
@@ -91,36 +121,6 @@ function getProperties(pathJSON, target) {
                 flat = merge(sub, flat);
                 next();
               } );
-            }
-
-            function processMatches(prop, jsonPath) {
-              
-              return new Promise( (resolve, reject) => {
-
-                const matches = jsonPath.match( /(sources|config)/ );
-                let flat = {};
-
-                if (matches) {
-                  const match = matches[1];
-                  if (!flat.hasOwnProperty(match)) {
-                    flat[match] = [];
-                  }
-
-                  prependPath( prop, jsonPath.substr(0, jsonPath.length - match.length) )
-                  .then( src => {
-                    flat[match] = flat[match].concat( src );
-                    resolve(flat);
-                  })
-                  .catch( reject );
-                }
-                else if (typeof prop !== 'object') {
-                  flat[path.basename(jsonPath)] = prop; 
-                  resolve(flat);
-                }
-                else {
-                  resolve(flat);
-                }
-              });
             }
           }
           , join )
