@@ -56,27 +56,27 @@ function processMatches(prop, jsonPath) {
   return new Promise( (resolve, reject) => {
 
     const matches = jsonPath.match( /(sources|config)/ );
-    let flat = {};
+    let result = {};
 
     if (matches) {
       const match = matches[1];
-      if (!flat.hasOwnProperty(match)) {
-        flat[match] = [];
+      if (!result.hasOwnProperty(match)) {
+        result[match] = [];
       }
 
       prependPath( prop, jsonPath.substr(0, jsonPath.length - match.length) )
       .then( src => {
-        flat[match] = flat[match].concat( src );
-        resolve(flat);
+        result[match] = result[match].concat( src );
+        resolve(result);
       })
       .catch( reject );
     }
     else if (typeof prop !== 'object') {
-      flat[path.basename(jsonPath)] = prop; 
-      resolve(flat);
+      result[path.basename(jsonPath)] = prop; 
+      resolve(result);
     }
     else {
-      resolve(flat);
+      resolve(result);
     }
   });
 }
@@ -84,23 +84,21 @@ function processMatches(prop, jsonPath) {
 function getProperties(pathJSON, target) {
 
   return new Promise( (resolve, reject) => {
-
     
     const pathBase = path.dirname( pathJSON );
 
     inject( pathJSON, 'import')    
-    .then( (someResult) => {
+    .then( (tree) => {
 
-      walkIt(someResult, target)
+      walkIt(tree, target)
       .then( (result) => {
         resolve(result);
       });
 
-
       function walkIt( obj, target ) {
 
         return new Promise( (resolve, reject) => {
-          let flat = {};
+          let result = {};
           walkJson( obj, (prop, jsonPath, next, skip) => {
            
             let absPath = path.join( pathBase, jsonPath );
@@ -110,7 +108,7 @@ function getProperties(pathJSON, target) {
             {
               walkIt( propertiesMatching( prop, target ) )
               .then( (sub) => {
-                flat = merge(sub, flat);
+                result = merge(sub, result);
                 skip();
               } );
             }
@@ -118,14 +116,14 @@ function getProperties(pathJSON, target) {
 
               processMatches( prop, absPath )
               .then( (sub) => {
-                flat = merge(sub, flat);
+                result = merge(sub, result);
                 next();
               } );
             }
           }
           , join )
           .then( () => {
-            resolve( flat );
+            resolve( result );
           });
         });
       }
