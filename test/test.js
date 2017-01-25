@@ -69,4 +69,17 @@ test( 'other branch', (t) => {
 		e.emit( sources ).check();
 	});
 });
+
+
+test( 'test non matching property names', (t) => {
+	let e = new Expector( t );
+
+	e.expect( { something: 'else' } );
+
+	getSources( './test/random.json', /win/ )
+	.then( (sources) => {
+		e.emit( sources ).check();
+	});
+});
+
 	
