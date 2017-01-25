@@ -79,13 +79,9 @@ function processMatches(prop, jsonPath) {
 
     if (matches) {
       const match = matches[1];
-      if (!result.hasOwnProperty(match)) {
-        result[match] = [];
-      }
-
       prependPath( prop, jsonPath.substr(0, jsonPath.length - match.length) )
       .then( src => {
-        result[match] = result[match].concat( src );
+        result = insert( src, match, result ); 
         resolve(result);
       })
       .catch( reject );
