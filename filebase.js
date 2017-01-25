@@ -77,7 +77,19 @@ function processMatches(prop, jsonPath) {
       .catch( reject );
     }
     else if (typeof prop !== 'object') {
-      result[path.basename(jsonPath)] = prop; 
+      const baseName = path.basename(jsonPath);
+      if (!result.hasOwnProperty(baseName)) {
+        result[baseName] = prop; 
+      }
+      else if (!Array.isArray(result[baseName]))
+      {
+        result[baseName] = [result[baseName], prop];
+      }
+      else
+      {
+        result[baseName] = result[baseName].concat( prop );
+      }
+      
       resolve(result);
     }
     else {
