@@ -44,6 +44,20 @@ function merge(sub, result) {
   return result;
 }
 
+function insert(src, name, target) 
+{
+  if (!target.hasOwnProperty(name)) {
+    target[name] = src; 
+  }
+  else if (!Array.isArray(target[name])) {
+    target[name] = [target[name], src];
+  }
+  else {
+    target[name] = target[name].concat( src );
+  }
+  return target;
+}
+
 function propertiesMatching(original, regexp) {
   let trimmed = {};
 
@@ -77,19 +91,7 @@ function processMatches(prop, jsonPath) {
       .catch( reject );
     }
     else if (typeof prop !== 'object') {
-      const baseName = path.basename(jsonPath);
-      if (!result.hasOwnProperty(baseName)) {
-        result[baseName] = prop; 
-      }
-      else if (!Array.isArray(result[baseName]))
-      {
-        result[baseName] = [result[baseName], prop];
-      }
-      else
-      {
-        result[baseName] = result[baseName].concat( prop );
-      }
-      
+      result = insert(prop, path.basename(jsonPath), result );      
       resolve(result);
     }
     else {
