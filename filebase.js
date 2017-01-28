@@ -96,8 +96,7 @@ function processMatches(prop, jsonPath) {
   });
 }
 
-function walkIt( obj, target, pathBase ) {
-
+function walkIt( obj, target, pathBase, cb ) {
   return new Promise( (resolve, reject) => {
     let result = {};
     walkJson( obj, (prop, jsonPath, next, skip) => {
@@ -129,54 +128,26 @@ function walkIt( obj, target, pathBase ) {
   });
 }
 
+function injectDependencies(pathJSON) {
+  return inject( pathJSON, 'import');
+}
+
 function getProperties(pathJSON, target) {
 
   return new Promise( (resolve, reject) => {
-    
-    const pathBase = path.dirname( pathJSON );
 
-    inject( pathJSON, 'import')    
-    .then( (tree) => {
+    injectDependencies( pathJSON )    
+    .then( tree => {
 
-      walkIt(tree, target, pathBase)
-      .then( (result) => {
+      walkIt(tree, target, path.dirname( pathJSON ))
+      .then( result => {
         resolve(result);
       });
     })
-    .catch( (err) => {
+    .catch( err => {
       reject( err ); 
     });
   }); 
-}
-
-function injectAndWalk(pathJSON, target, cb) {
-
-  return new Promise( (resolve, reject) => {
-    
-    const pathBase = path.dirname( pathJSON );
-
-    inject( pathJSON, 'import')    
-    .then( (tree) => {
-
-      walkIt(tree, target)
-      .then( resolve );
-
-      function walkIt( obj, target ) {
-
-        return new Promise( (resolve, reject) => {
-          
-          walkJson( obj, (prop, jsonPath, next, skip) => {
-            cb( prop, jsonPath, next, skip, walkIt );
-          }
-          , join )
-          .then( resolve );
-        });
-      }
-    })
-    .catch( (err) => {
-      reject( err ); 
-    }); 
-  });
 }
 
 if (module.parent) {
