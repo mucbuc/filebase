@@ -96,6 +96,39 @@ function processMatches(prop, jsonPath) {
   });
 }
 
+function walkIt( obj, target, pathBase ) {
+
+  return new Promise( (resolve, reject) => {
+    let result = {};
+    walkJson( obj, (prop, jsonPath, next, skip) => {
+     
+      let absPath = path.join( pathBase, jsonPath );
+
+      if (  typeof target !== 'undefined'
+        &&  jsonPath == 'branches')
+      {
+        walkIt( propertiesMatching( prop, target ), target, pathBase )
+        .then( (sub) => {
+          result = merge(sub, result);
+          skip();
+        } );
+      }
+      else {
+
+        processMatches( prop, absPath )
+        .then( (sub) => {
+          result = merge(sub, result);
+          next();
+        } );
+      }
+    }
+    , join )
+    .then( () => {
+      resolve( result );
+    });
+  });
+}
+
 function getProperties(pathJSON, target) {
 
   return new Promise( (resolve, reject) => {
@@ -105,48 +138,45 @@ function getProperties(pathJSON, target) {
     inject( pathJSON, 'import')    
     .then( (tree) => {
 
-      walkIt(tree, target)
+      walkIt(tree, target, pathBase)
       .then( (result) => {
         resolve(result);
       });
-
-      function walkIt( obj, target ) {
-
-        return new Promise( (resolve, reject) => {
-          let result = {};
-          walkJson( obj, (prop, jsonPath, next, skip) => {
-           
-            let absPath = path.join( pathBase, jsonPath );
-
-            if (  typeof target !== 'undefined'
-              &&  jsonPath == 'branches')
-            {
-              walkIt( propertiesMatching( prop, target ) )
-              .then( (sub) => {
-                result = merge(sub, result);
-                skip();
-              } );
-            }
-            else {
-
-              processMatches( prop, absPath )
-              .then( (sub) => {
-                result = merge(sub, result);
-                next();
-              } );
-            }
-          }
-          , join )
-          .then( () => {
-            resolve( result );
-          });
-        });
-      }
     })
     .catch( (err) => {
       reject( err ); 
     });
   }); 
+}
+
+function injectAndWalk(pathJSON, target, cb) {
+
+  return new Promise( (resolve, reject) => {
+    
+    const pathBase = path.dirname( pathJSON );
+
+    inject( pathJSON, 'import')    
+    .then( (tree) => {
+
+      walkIt(tree, target)
+      .then( resolve );
+
+      function walkIt( obj, target ) {
+
+        return new Promise( (resolve, reject) => {
+          
+          walkJson( obj, (prop, jsonPath, next, skip) => {
+            cb( prop, jsonPath, next, skip, walkIt );
+          }
+          , join )
+          .then( resolve );
+        });
+      }
+    })
+    .catch( (err) => {
+      reject( err ); 
+    }); 
+  });
 }
 
 if (module.parent) {
