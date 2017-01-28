@@ -86,7 +86,7 @@ test( 'test non matching property names', (t) => {
 	});
 });
 
-test.only( 'test getBranches', (t) => {
+test( 'test getBranches', (t) => {
 	let e = new Expector( t ); 
 	
 	e.expect( [ 'mac', 'win' ]);
