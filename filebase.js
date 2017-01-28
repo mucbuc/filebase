@@ -150,9 +150,15 @@ function getProperties(pathJSON, target) {
   }); 
 }
 
+function getBranches() {
+
+}
+
 if (module.parent) {
-  module.exports = getProperties;
-  return;  
+  module.exports = { 
+    getProperties: getProperties,
+    getBranches: getBranches
+  };
 }
 else {
   program

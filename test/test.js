@@ -2,7 +2,7 @@
 
 'use strict';
 
-let getSources = require( './../filebase.js' )
+let getProperties = require( './../filebase.js' ).getProperties
   , test = require( 'tape' )
   , Expector = require( 'expector' ).SeqExpector
   , path = require( 'path' );
@@ -14,7 +14,7 @@ test( 'single import', (t) => {
 
 	e.expect( { sources: [ 'test/lib/mod/src/fkjdsa.h', 'test/src/main.cpp' ], config: [ 'test/config.gypi' ] } ); 
 
-	getSources( './test/test.json' )
+	getProperties( './test/test.json' )
 	.then( (sources) => {
 		e.emit( sources ).check(); 		
 	});
@@ -26,7 +26,7 @@ test( 'multiple import', (t) => {
 
 	e.expect( { sources: [ 'test/lib/mod/src/fkjdsa.h', 'test/lib/modB/src/aabbcc.h', 'test/src/main.cpp' ] } ); 
 
-	getSources( './test/test2.json')
+	getProperties( './test/test2.json')
 	.then( (sources) => {
 		e.emit( sources ).check(); 		
 	});
@@ -41,7 +41,7 @@ test( 'inside current working directory', (t) => {
 
 	e.expect( { sources: [ 'lib/mod/src/fkjdsa.h', 'lib/modB/src/aabbcc.h', 'src/main.cpp' ] } ); 
 
-	getSources( './test2.json' )
+	getProperties( './test2.json' )
 	.then( (sources) => {
 		e.emit( sources ).check(); 		
 		process.chdir( cwd );
@@ -53,7 +53,7 @@ test( 'branching', (t) => {
 
 	e.expect( { config: ["test/config.gypi"] } ); 
 
-	getSources( './test/branch.json', /mac/ )
+	getProperties( './test/branch.json', /mac/ )
 	.then( (sources) => {
 		e.emit( sources ).check(); 		
 	});
@@ -64,7 +64,7 @@ test( 'other branch', (t) => {
 
 	e.expect( { win: 'something' } );
 
-	getSources( './test/branch.json', /win/ )
+	getProperties( './test/branch.json', /win/ )
 	.then( (sources) => {
 		e.emit( sources ).check();
 	});
@@ -76,7 +76,7 @@ test( 'test non matching property names', (t) => {
 
 	e.expect( { something: 'else' } );
 
-	getSources( './test/random.json', /win/ )
+	getProperties( './test/random.json', /win/ )
 	.then( (sources) => {
 		e.emit( sources ).check();
 	});
