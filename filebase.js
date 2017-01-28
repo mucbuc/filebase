@@ -150,8 +150,24 @@ function getProperties(pathJSON, target) {
   }); 
 }
 
-function getBranches() {
+function getBranches(pathJSON) {
 
+  return new Promise( (resolve, reject) => {
+    injectDependencies( pathJSON )    
+    .then( tree => {
+      let result;  
+      walkJson( tree, (prop, jsonPath, next, skip) => {
+        if (jsonPath == 'branches') {
+          result = Object.keys(prop);
+        }
+        next();
+      }
+      , join )
+      .then( () => {
+        resolve(result);
+      });
+    });
+  });
 }
 
 if (module.parent) {

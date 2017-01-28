@@ -2,12 +2,16 @@
 
 'use strict';
 
-let getProperties = require( './../filebase.js' ).getProperties
+let filebase = require( './../filebase.js' )
   , test = require( 'tape' )
   , Expector = require( 'expector' ).SeqExpector
   , path = require( 'path' );
 
 process.chdir( path.join( __dirname, '..' ) );
+
+
+let getProperties = filebase.getProperties;
+let getBranches = filebase.getBranches;
 
 test( 'single import', (t) => {
 	let e = new Expector( t );
@@ -81,5 +85,15 @@ test( 'test non matching property names', (t) => {
 		e.emit( sources ).check();
 	});
 });
+
+test.only( 'test getBranches', (t) => {
+	let e = new Expector( t ); 
+	
+	e.expect( [ 'mac', 'win' ]);
+	getBranches( './test/branch.json' )
+	.then( (branches) => {
+		e.emit( branches ).check();
+	});
+})
 
 	
