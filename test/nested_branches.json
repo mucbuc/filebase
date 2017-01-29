@@ -1,0 +1,9 @@
+{
+	"branches": {
+		"x3300": {
+			"import": [
+				"branch.json"
+			]
+		}
+	}
+}
