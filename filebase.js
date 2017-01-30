@@ -164,21 +164,31 @@ function getBranches(pathJSON) {
                 
         if (jsonPath == "branches")
         {
+          result = result.concat(Object.keys(prop));
+
           walkIt( prop )
           .then( sub => {
-
-            console.log( 'sub: ', sub );
+            
+            if (sub.length) {
+              result = result.concat(sub);
+            }
+            
             skip();
           })
           .catch( next );
-
-          //result = result.concat(Object.keys(prop));
-          //skip();
+        }
+        else if (   typeof prop === 'object'
+                &&  !Array.isArray(prop))
+        {
+          walkIt( prop )
+          .then( sub => {
+            result = result.concat(sub);
+            next();
+          } )
+          .catch( next );
         }
         else {
-          walkIt( prop )
-          .then( next )
-          .catch( next );
+          next();
         }
       } )
       .then( () => {
