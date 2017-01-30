@@ -164,14 +164,16 @@ function getBranches(pathJSON) {
                 
         if (jsonPath == "branches")
         {
-          // walkIt( prop )
-          // .then( sub => {
+          walkIt( prop )
+          .then( sub => {
 
-          // });
-          //.catch( next );
+            console.log( 'sub: ', sub );
+            skip();
+          })
+          .catch( next );
 
-          result = result.concat(Object.keys(prop));
-          skip();
+          //result = result.concat(Object.keys(prop));
+          //skip();
         }
         else {
           walkIt( prop )

@@ -97,7 +97,7 @@ test( 'test getBranches', (t) => {
 });
 
 
-test.skip( 'test nested branches', (t) => {
+test.only( 'test nested branches', (t) => {
 	let e = new Expector( t ); 
 	
 	e.expect( [ 'x3300:mac', 'x3300:win' ]);
