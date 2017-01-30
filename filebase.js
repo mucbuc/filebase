@@ -151,18 +151,26 @@ function getProperties(pathJSON, target) {
 }
 
 function getBranches(pathJSON) {
-  let result = [];
+  
   function walkIt(tree) {
+
+    console.log( 'walking:', JSON.stringify(tree, null, 2) );
 
     return new Promise( (resolve, reject) => {
 
-      let base = ''; 
+      let base = '';
+      let result = [];
       walkJson( tree, (prop, jsonPath, next, skip) => {
                 
         if (jsonPath == "branches")
         {
-          result.push(Object.keys(prop));
+          // walkIt( prop )
+          // .then( sub => {
 
+          // });
+          //.catch( next );
+
+          result = result.concat(Object.keys(prop));
           skip();
         }
         else {
