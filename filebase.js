@@ -154,7 +154,7 @@ function getBranches(pathJSON) {
   
   function walkIt(tree) {
 
-    console.log( 'walking:', JSON.stringify(tree, null, 2) );
+    //console.log( 'walking:', JSON.stringify(tree, null, 2) );
 
     return new Promise( (resolve, reject) => {
 
@@ -164,15 +164,14 @@ function getBranches(pathJSON) {
                 
         if (jsonPath == "branches")
         {
-          result = result.concat(Object.keys(prop));
+          console.log( 'concat:', Object.keys(prop), jsonPath );
+
+          //result = result.concat(Object.keys(prop));
 
           walkIt( prop )
           .then( sub => {
-            
-            if (sub.length) {
-              result = result.concat(sub);
-            }
-            
+            console.log( 'sub1:', sub );
+            //result = result.concat(sub);
             skip();
           })
           .catch( next );
@@ -182,8 +181,8 @@ function getBranches(pathJSON) {
         {
           walkIt( prop )
           .then( sub => {
-            result = result.concat(sub);
-            next();
+            //result = result.concat(sub);
+            skip();
           } )
           .catch( next );
         }
