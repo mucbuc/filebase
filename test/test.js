@@ -97,15 +97,13 @@ test( 'test getBranches', (t) => {
 });
 
 
-test.only( 'test nested branches', (t) => {
+test( 'test nested branches', (t) => {
 	let e = new Expector( t ); 
 	
-	e.expect( [ 'x3300:mac', 'x3300:win' ]);
+	e.expect( [ { 'x3300': [ 'mac', 'win' ] }, 'x3311' ] );
 	getBranches( './test/nested_branches.json' )
 	.then( (branches) => {
-
-		console.log( 'result:', JSON.stringify( branches, null, 2 ) ); 
-		//e.emit( branches ).check();
+		e.emit( branches ).check();
 	});
 })
 

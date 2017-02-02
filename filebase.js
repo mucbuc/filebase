@@ -151,56 +151,11 @@ function getProperties(pathJSON, target) {
 }
 
 function getBranches(pathJSON) {
-  
-  function walkIt(tree) {
 
-    //console.log( 'walking:', JSON.stringify(tree, null, 2) );
-
-    return new Promise( (resolve, reject) => {
-
-      let base = '';
-      let result = [];
-      walkJson( tree, (prop, jsonPath, next, skip) => {
-                
-        if (jsonPath == "branches")
-        {
-          console.log( 'concat:', Object.keys(prop), jsonPath );
-
-          //result = result.concat(Object.keys(prop));
-
-          walkIt( prop )
-          .then( sub => {
-            console.log( 'sub1:', sub );
-            //result = result.concat(sub);
-            skip();
-          })
-          .catch( next );
-        }
-        else if (   typeof prop === 'object'
-                &&  !Array.isArray(prop))
-        {
-          walkIt( prop )
-          .then( sub => {
-            //result = result.concat(sub);
-            skip();
-          } )
-          .catch( next );
-        }
-        else {
-          next();
-        }
-      } )
-      .then( () => {
-        resolve(result);
-      })
-      .catch( reject );
-    });
-  }
-  
   return new Promise( (resolve, reject) => {
     injectDependencies( pathJSON )    
     .then( tree => {
-      walkIt(tree)
+      walkIt2(tree)
       .then( result => {
         resolve( result );
       });
@@ -210,6 +165,58 @@ function getBranches(pathJSON) {
       reject(err);
     });
   });
+  
+  function walkIt2(tree) {
+
+    return new Promise( (resolve, reject) => {
+
+      let base = '';
+      let result = [];
+      walkJson( tree, (prop, jsonPath, next, skip) => {
+            
+        if (jsonPath.endsWith("branches"))
+        {
+          traverse( prop, (branch, next) => {
+            const branchName = Object.keys(branch)[0]
+            const branchObj = branch[branchName];
+
+            if (typeof branchObj === 'object') {
+              walkIt2( branchObj )
+              .then( sub => {
+                if (!sub.length) 
+                {
+                  result = result.concat(branchName);
+                }
+                else {
+                  result = result.concat( {[branchName]: sub} );
+                }
+                next();
+              })
+              .catch( err => {
+                console.log( 'error: ', err );
+                reject( err );
+              });
+            }
+            else {
+              
+              result = result.concat(branchName);
+
+              next();
+            }
+          })
+          .then( skip )
+          .catch( next );
+        }
+        else {
+          next();
+        }
+      })
+      .then( () => {
+        resolve(result);
+      })
+      .catch( reject );
+    });
+  }
 }
 
 if (module.parent) {
