@@ -49,54 +49,19 @@ function copyMatches(original, regexp) {
 }
 
 function processMatches(prop, jsonPath) {
-  
-  return new Promise( (resolve, reject) => {
 
-    const matches = jsonPath.match( /(sources|config)/ );
-    let result = {};
+  const matches = jsonPath.match( /(sources|config)/ );
+  let result = {};
 
-    if (matches) {
-      const match = matches[1];
-      const content = prependPath( jsonPath.substr(0, jsonPath.length - match.length), prop );
-      result = merge( result, { [match]: content } ); 
-    }
-    else if (typeof prop !== 'object') {
-      result = merge( result, { [path.basename(jsonPath)]: prop } );      
-    }
-    resolve(result);
-  });
-}
-
-function walkIt( obj, target, pathBase, cb ) {
-  return new Promise( (resolve, reject) => {
-    let result = {};
-    walkJson( obj, (prop, jsonPath, next, skip) => {
-     
-      let absPath = path.join( pathBase, jsonPath );
-
-      if (  typeof target !== 'undefined'
-        &&  jsonPath == 'branches')
-      {
-        walkIt( copyMatches( prop, target ), target, pathBase )
-        .then( (sub) => {
-          result = merge(result, sub);
-          skip();
-        } );
-      }
-      else {
-
-        processMatches( prop, absPath )
-        .then( (sub) => {
-          result = merge(result, sub);
-          next();
-        } );
-      }
-    }
-    , join )
-    .then( () => {
-      resolve( result );
-    });
-  });
+  if (matches) {
+    const match = matches[1];
+    const content = prependPath( jsonPath.substr(0, jsonPath.length - match.length), prop );
+    result = merge( result, { [match]: content } ); 
+  }
+  else if (typeof prop !== 'object') {
+    result = merge( result, { [path.basename(jsonPath)]: prop } );      
+  }
+  return result;
 }
 
 function injectDependencies(pathJSON) {
@@ -118,7 +83,35 @@ function getProperties(pathJSON, target) {
     .catch( err => {
       reject( err ); 
     });
-  }); 
+  });
+
+  function walkIt( obj, target, pathBase, cb ) {
+    return new Promise( (resolve, reject) => {
+      let result = {};
+      walkJson( obj, (prop, jsonPath, next, skip) => {
+       
+        let absPath = path.join( pathBase, jsonPath );
+
+        if (  typeof target !== 'undefined'
+          &&  jsonPath == 'branches')
+        {
+          walkIt( copyMatches( prop, target ), target, pathBase )
+          .then( (sub) => {
+            result = merge(result, sub);
+            skip();
+          } );
+        }
+        else {
+          result = merge(result, processMatches( prop, absPath ) );
+          next();
+        }
+      }
+      , join )
+      .then( () => {
+        resolve( result );
+      });
+    });
+  }
 }
 
 function getBranches(pathJSON) {
@@ -126,7 +119,7 @@ function getBranches(pathJSON) {
   return new Promise( (resolve, reject) => {
     injectDependencies( pathJSON )    
     .then( tree => {
-      walkIt2(tree)
+      walkIt(tree)
       .then( result => {
         resolve( result );
       });
@@ -137,7 +130,7 @@ function getBranches(pathJSON) {
     });
   });
   
-  function walkIt2(tree) {
+  function walkIt(tree) {
 
     return new Promise( (resolve, reject) => {
 
@@ -152,7 +145,7 @@ function getBranches(pathJSON) {
             const branchObj = branch[branchName];
 
             if (typeof branchObj === 'object') {
-              walkIt2( branchObj )
+              walkIt( branchObj )
               .then( sub => {
                 if (!sub.length) 
                 {
