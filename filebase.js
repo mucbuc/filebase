@@ -15,22 +15,6 @@ function join(a, b) {
   return path.join( path.dirname(a), b );
 }
 
-function processMatches(prop, jsonPath) {
-
-  const matches = jsonPath.match( /(sources|config)/ );
-  let result = {};
-
-  if (matches) {
-    const match = matches[1];
-    const content = utils.prependPath( jsonPath.substr(0, jsonPath.length - match.length), prop );
-    result = utils.mergeObjects( result, { [match]: content } ); 
-  }
-  else if (typeof prop !== 'object') {
-    result = utils.mergeObjects( result, { [path.basename(jsonPath)]: prop } );      
-  }
-  return result;
-}
-
 function injectDependencies(pathJSON) {
   return inject( pathJSON, 'import');
 }
@@ -78,6 +62,22 @@ function getProperties(pathJSON, target) {
         resolve( result );
       });
     });
+  }
+
+  function processMatches(prop, jsonPath) {
+
+    const matches = jsonPath.match( /(sources|config)/ );
+    let result = {};
+
+    if (matches) {
+      const match = matches[1];
+      const content = utils.prependPath( jsonPath.substr(0, jsonPath.length - match.length), prop );
+      result = utils.mergeObjects( result, { [match]: content } ); 
+    }
+    else if (typeof prop !== 'object') {
+      result = utils.mergeObjects( result, { [path.basename(jsonPath)]: prop } );      
+    }
+    return result;
   }
 }
 
