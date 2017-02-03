@@ -10,13 +10,11 @@ const assert = require( 'assert' )
   , walkJson = require( 'walk-json' ); 
 
 function prependPath(dirname, src) {
-  return new Promise( resolve => {
-    let result = [];
-    for (const file of src) {
-      result.push( path.join( dirname, file ) );
-    }
-    resolve( result );
-  });
+  let result = [];
+  for (const file of src) {
+    result.push( path.join( dirname, file ) );
+  }
+  return result;
 }
 
 function join(a, b) {
@@ -38,7 +36,7 @@ function merge(dest, source) {
   return dest;
 }
 
-function propertiesMatching(original, regexp) {
+function copyMatches(original, regexp) {
   let trimmed = {};
 
   for (let name in original) {
@@ -59,20 +57,13 @@ function processMatches(prop, jsonPath) {
 
     if (matches) {
       const match = matches[1];
-      prependPath( jsonPath.substr(0, jsonPath.length - match.length), prop )
-      .then( src => {
-        result = merge( result, { [match]: src } ); 
-        resolve(result);
-      })
-      .catch( reject );
+      const content = prependPath( jsonPath.substr(0, jsonPath.length - match.length), prop );
+      result = merge( result, { [match]: content } ); 
     }
     else if (typeof prop !== 'object') {
       result = merge( result, { [path.basename(jsonPath)]: prop } );      
-      resolve(result);
     }
-    else {
-      resolve(result);
-    }
+    resolve(result);
   });
 }
 
@@ -86,7 +77,7 @@ function walkIt( obj, target, pathBase, cb ) {
       if (  typeof target !== 'undefined'
         &&  jsonPath == 'branches')
       {
-        walkIt( propertiesMatching( prop, target ), target, pathBase )
+        walkIt( copyMatches( prop, target ), target, pathBase )
         .then( (sub) => {
           result = merge(result, sub);
           skip();
