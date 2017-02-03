@@ -31,18 +31,18 @@ function merge(sub, result) {
   return result;
 }
 
-function insert(src, name, target) 
+function insert(src, name, result) 
 {
-  if (!target.hasOwnProperty(name)) {
-    target[name] = src; 
+  if (!result.hasOwnProperty(name)) {
+    result[name] = src; 
   }
-  else if (!Array.isArray(target[name])) {
-    target[name] = [target[name], src];
+  else if (!Array.isArray(result[name])) {
+    result[name] = [result[name], src];
   }
   else {
-    target[name] = target[name].concat( src );
+    result[name] = result[name].concat( src );
   }
-  return target;
+  return result;
 }
 
 function propertiesMatching(original, regexp) {
