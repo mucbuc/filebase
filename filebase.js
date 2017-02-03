@@ -23,26 +23,19 @@ function join(a, b) {
   return path.join( path.dirname(a), b );
 }
 
-function merge(sub, result) {
-
-  for (let name in sub) {
-    result = insert(sub[name], name, result);
+function merge(dest, source) {
+  for (let name in source) {
+    if (!dest.hasOwnProperty(name)) {
+      dest[name] = source[name]; 
+    }
+    else if (!Array.isArray(dest[name])) {
+      dest[name] = [dest[name], source[name]];
+    }
+    else {
+      dest[name] = dest[name].concat( source[name] );
+    }
   }
-  return result;
-}
-
-function insert(src, name, result) 
-{
-  if (!result.hasOwnProperty(name)) {
-    result[name] = src; 
-  }
-  else if (!Array.isArray(result[name])) {
-    result[name] = [result[name], src];
-  }
-  else {
-    result[name] = result[name].concat( src );
-  }
-  return result;
+  return dest;
 }
 
 function propertiesMatching(original, regexp) {
@@ -68,13 +61,13 @@ function processMatches(prop, jsonPath) {
       const match = matches[1];
       prependPath( jsonPath.substr(0, jsonPath.length - match.length), prop )
       .then( src => {
-        result = insert( src, match, result ); 
+        result = merge( result, { [match]: src } ); 
         resolve(result);
       })
       .catch( reject );
     }
     else if (typeof prop !== 'object') {
-      result = insert(prop, path.basename(jsonPath), result );      
+      result = merge( result, { [path.basename(jsonPath)]: prop } );      
       resolve(result);
     }
     else {
@@ -95,7 +88,7 @@ function walkIt( obj, target, pathBase, cb ) {
       {
         walkIt( propertiesMatching( prop, target ), target, pathBase )
         .then( (sub) => {
-          result = merge(sub, result);
+          result = merge(result, sub);
           skip();
         } );
       }
@@ -103,7 +96,7 @@ function walkIt( obj, target, pathBase, cb ) {
 
         processMatches( prop, absPath )
         .then( (sub) => {
-          result = merge(sub, result);
+          result = merge(result, sub);
           next();
         } );
       }
