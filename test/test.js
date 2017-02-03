@@ -21,6 +21,9 @@ test( 'single import', (t) => {
 	getProperties( './test/test.json' )
 	.then( (sources) => {
 		e.emit( sources ).check(); 		
+	})
+	.catch( err => {
+		console.log( err );
 	});
 
 });

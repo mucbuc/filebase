@@ -9,16 +9,15 @@ const assert = require( 'assert' )
   , program = require( 'commander' )
   , walkJson = require( 'walk-json' ); 
 
-function prependPath(src, dirname) {
+function prependPath(dirname, src) {
   assert( Array.isArray( src ) ); 
 
   return new Promise( (resolve, reject) => {
     let result = [];
-    traverse( src, ( file, next ) => {
+    for (const file of src) {
       result.push( path.join( dirname, file ) );
-      next();
-    })
-    .then( resolve.bind( null, result ) );
+    }
+    resolve( result );
   });
 }
 
@@ -79,7 +78,7 @@ function processMatches(prop, jsonPath) {
 
     if (matches) {
       const match = matches[1];
-      prependPath( prop, jsonPath.substr(0, jsonPath.length - match.length) )
+      prependPath( jsonPath.substr(0, jsonPath.length - match.length), prop )
       .then( src => {
         result = insert( src, match, result ); 
         resolve(result);
