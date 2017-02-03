@@ -10,8 +10,6 @@ const assert = require( 'assert' )
   , walkJson = require( 'walk-json' ); 
 
 function prependPath(dirname, src) {
-  assert( Array.isArray( src ) ); 
-
   return new Promise( (resolve, reject) => {
     let result = [];
     for (const file of src) {
