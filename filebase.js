@@ -7,45 +7,12 @@ const assert = require( 'assert' )
   , path = require( 'path' )
   , traverse = require( 'traverjs' )
   , program = require( 'commander' )
-  , walkJson = require( 'walk-json' ); 
+  , walkJson = require( 'walk-json' )
+  , utils = require( './utils' );
 
-function prependPath(dirname, src) {
-  let result = [];
-  for (const file of src) {
-    result.push( path.join( dirname, file ) );
-  }
-  return result;
-}
 
 function join(a, b) {
   return path.join( path.dirname(a), b );
-}
-
-function merge(dest, source) {
-  for (let name in source) {
-    if (!dest.hasOwnProperty(name)) {
-      dest[name] = source[name]; 
-    }
-    else if (!Array.isArray(dest[name])) {
-      dest[name] = [dest[name], source[name]];
-    }
-    else {
-      dest[name] = dest[name].concat( source[name] );
-    }
-  }
-  return dest;
-}
-
-function copyMatches(original, regexp) {
-  let trimmed = {};
-
-  for (let name in original) {
-    if (name.match(regexp)) {
-      trimmed[name] = original[name]
-    }
-  }
-
-  return trimmed;
 }
 
 function processMatches(prop, jsonPath) {
@@ -55,11 +22,11 @@ function processMatches(prop, jsonPath) {
 
   if (matches) {
     const match = matches[1];
-    const content = prependPath( jsonPath.substr(0, jsonPath.length - match.length), prop );
-    result = merge( result, { [match]: content } ); 
+    const content = utils.prependPath( jsonPath.substr(0, jsonPath.length - match.length), prop );
+    result = utils.mergeObjects( result, { [match]: content } ); 
   }
   else if (typeof prop !== 'object') {
-    result = merge( result, { [path.basename(jsonPath)]: prop } );      
+    result = utils.mergeObjects( result, { [path.basename(jsonPath)]: prop } );      
   }
   return result;
 }
@@ -95,14 +62,14 @@ function getProperties(pathJSON, target) {
         if (  typeof target !== 'undefined'
           &&  jsonPath == 'branches')
         {
-          walkIt( copyMatches( prop, target ), target, pathBase )
+          walkIt( utils.copyMatches( prop, target ), target, pathBase )
           .then( (sub) => {
-            result = merge(result, sub);
+            result = utils.mergeObjects(result, sub);
             skip();
           } );
         }
         else {
-          result = merge(result, processMatches( prop, absPath ) );
+          result = utils.mergeObjects(result, processMatches( prop, absPath ) );
           next();
         }
       }
