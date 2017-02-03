@@ -26,17 +26,7 @@ function join(a, b) {
 function merge(sub, result) {
 
   for (let name in sub) {
-    if (!result.hasOwnProperty(name)) {
-      result[name] = sub[name];
-    }
-    else {
-      if (!Array.isArray(result[name])) {
-        result[name] = [ result[name], sub[name] ];
-      }
-      else {
-        result[name] = result[name].concat(sub[name]);
-      }
-    }
+    result = insert(sub[name], name, result);
   }
   return result;
 }
