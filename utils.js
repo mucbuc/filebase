@@ -10,7 +10,7 @@ function prependPath(dirname, src) {
   return result;
 }
 
-function merge(dest, source) {
+function mergeObjects(dest, source) {
   for (let name in source) {
     if (!dest.hasOwnProperty(name)) {
       dest[name] = source[name]; 
@@ -39,6 +39,6 @@ function copyMatches(original, regexp) {
 
 module.exports = {
   prependPath: prependPath,
-  mergeObjects: merge,
+  mergeObjects: mergeObjects,
   copyMatches: copyMatches
 };
