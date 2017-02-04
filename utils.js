@@ -1,6 +1,7 @@
 'use strict';
 
-let path = require( 'path' );
+const path = require( 'path' )
+  , inject = require( 'inject-json' );
 
 function prependPath(dirname, src) {
   let result = [];
@@ -37,8 +38,18 @@ function copyMatches(original, regexp) {
   return result;
 }
 
+function injectDependencies(pathJSON) {
+  return inject( pathJSON, 'import');
+}
+
+function join(a, b) {
+  return path.join( path.dirname(a), b );
+}
+
 module.exports = {
   prependPath: prependPath,
   mergeObjects: mergeObjects,
-  copyMatches: copyMatches
+  copyMatches: copyMatches,
+  injectDependencies: injectDependencies,
+  join: join
 };
