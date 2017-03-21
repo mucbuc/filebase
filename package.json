@@ -1,0 +1,30 @@
+{
+  "name": "mucbuc-filebase",
+  "version": "0.0.0",
+  "description": "",
+  "main": "filebase.js",
+  "scripts": {
+    "test": "tape test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mucbuc/filebase.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mucbuc/filebase/issues"
+  },
+  "homepage": "https://github.com/mucbuc/filebase#readme",
+  "dependencies": {
+    "inject-json": "*", 
+    "commander": "*",
+    "walk-json": "*",
+    "traverjs": "*"
+  },
+  "devDependencies": {
+    "tape": "*", 
+    "expector": "*",
+    "traverjs": "*"
+  }
+}

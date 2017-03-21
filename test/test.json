@@ -1,0 +1,11 @@
+{
+	"import": [
+		"lib/mod/inc.json"
+	],
+	"sources": [ 
+		"src/main.cpp"
+	],
+	"config": [
+		"config.gypi"
+	]
+}
