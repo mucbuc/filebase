@@ -1,0 +1,9 @@
+{
+	"import": [
+		"lib/modB/def.json",
+		"lib/modC/def.json"
+	],
+	"sources": [ 
+		"src/main.cpp"
+	]
+}

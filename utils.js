@@ -39,10 +39,17 @@ function copyMatches(original, regexp) {
 }
 
 function injectDependencies(pathJSON) {
+  
+  console.log( 'injectDependencies', pathJSON );
+
   return inject( pathJSON, 'import');
 }
 
 function join(a, b) {
+  
+
+  console.log( '**** join', a, b );
+
   return path.join( path.dirname(a), b );
 }
 

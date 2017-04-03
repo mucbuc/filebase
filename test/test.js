@@ -138,4 +138,25 @@ test( 'list array', (t) => {
   });
 });
 
+test.only( 'nested imports', (t) => {
+  let e = new Expector( t );
+
+  e.expect( {
+    sources: [ 
+      'test/lib/modB/src/aabbcc.h', 
+      'test/lib/modC/lib/mod/src/fkjdsa.h',
+      'test/src/main.cpp' 
+    ] 
+  } );
+
+  compose( './test/test3.json' )
+  .then( sources => {
+    e.emit(sources).check();
+  })
+  .catch( error => {
+    console.log( 'err: ', err );
+  });
+
+});
+
   
