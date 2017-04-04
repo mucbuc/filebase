@@ -1,0 +1,6 @@
+{
+	"import": [
+		"lib/modC/def.json",
+		"lib/modD/def.json"
+	]
+}

@@ -19,8 +19,19 @@ function mergeObjects(dest, source) {
     else if (!Array.isArray(dest[name])) {
       dest[name] = [dest[name], source[name]];
     }
+    else if (Array.isArray(source[name])) {
+      for (const file of source[name]) {
+        concatIfUnique(file);
+      }
+    }
     else {
-      dest[name] = dest[name].concat( source[name] );
+      concatIfUnique(source[name]);
+    }
+
+    function concatIfUnique(file) {
+      if (dest[name].indexOf(file) == -1) {
+        dest[name] = dest[name].concat( file );
+      }
     }
   }
   return dest;
@@ -43,6 +54,11 @@ function injectDependencies(pathJSON) {
 }
 
 function join(a, b) {
+  if (a.endsWith('.json') && b.endsWith('.json'))
+  {
+    return path.join( path.dirname(a), b );
+  }
+
   return path.join( path.dirname(a), b );
 }
 
