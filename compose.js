@@ -13,12 +13,9 @@ function compose(pathJSONs, target) {
   return new Promise( (resolve, reject) => {
 
     let result = {};
-    console.log( 'compose', pathJSONs );
     traverse( utils.makeArray(pathJSONs), (pathJSON, next) => {
       utils.injectDependencies( pathJSON )    
       .then( tree => {
-        console.log( '****', JSON.stringify( tree, null, 2 ) );
-
         walkIt(tree, target, path.dirname( pathJSON ))
         .then( sub => {
           result = utils.mergeObjects( result, sub );
@@ -42,8 +39,6 @@ function compose(pathJSONs, target) {
       let result = {};
       walkJson( obj, (prop, jsonPath, next, skip) => {
        
-        console.log( 'sub', prop );
-
         let absPath = path.join( pathBase, jsonPath );
 
         if (  typeof target !== 'undefined'

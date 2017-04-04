@@ -138,7 +138,7 @@ test( 'list array', (t) => {
   });
 });
 
-test.only( 'nested imports', (t) => {
+test( 'nested imports', (t) => {
   let e = new Expector( t );
 
   e.expect( {
