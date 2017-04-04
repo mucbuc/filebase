@@ -45,7 +45,7 @@ function injectDependencies(pathJSON) {
 function join(a, b) {
   if (a.endsWith('.json') && b.endsWith('.json'))
   {
-    return b;
+    return path.join( path.dirname(a), b );
   }
 
   return path.join( path.dirname(a), b );
