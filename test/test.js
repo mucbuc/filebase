@@ -144,7 +144,7 @@ test( 'nested imports', (t) => {
   e.expect( {
     sources: [ 
       'test/lib/modB/src/aabbcc.h', 
-      'test/lib/modC/lib/mod/src/fkjdsa.h',
+      'test/lib/mod/src/fkjdsa.h',
       'test/src/main.cpp' 
     ] 
   } );
